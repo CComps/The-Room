@@ -56,6 +56,7 @@ class Game(object):
     def __init__(self):
         pygame.init()
         self.screen = pygame.display.set_mode((1280, 800), pygame.RESIZABLE)
+        pygame.display.set_caption("The Room")
         self.clock = pygame.time.Clock()
         self.player = Player()
 
