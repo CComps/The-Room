@@ -1,11 +1,11 @@
 import pygame
-import os
+import sys
 
 
 class Player(object):
     def __init__(self):
         self.image = pygame.image.load("images/player.png")
-        self.center = [640, 400]
+        self.position = [640, 400]  # World coordinates
         self.velocity = [0, 0]
         self.max_speed = 10
         self.acceleration = 0.1
@@ -44,11 +44,13 @@ class Player(object):
                 if self.velocity[1] > 0:
                     self.velocity[1] = 0
 
-        self.center[0] += self.velocity[0]
-        self.center[1] += self.velocity[1]
+        self.position[0] += self.velocity[0]
+        self.position[1] += self.velocity[1]
 
-    def draw(self, surf):
-        surf.blit(self.image, self.center)
+    def draw(self, surf, camera_pos):
+        # Draw the player at its position relative to the camera
+        draw_pos = [self.position[0] - camera_pos[0], self.position[1] - camera_pos[1]]
+        surf.blit(self.image, draw_pos)
 
 
 class Game(object):
@@ -59,6 +61,7 @@ class Game(object):
         pygame.display.set_caption("The Room")
         self.clock = pygame.time.Clock()
         self.player = Player()
+        self.camera_pos = [0, 0]  # Camera's position in the world
 
     def run(self):
         running = 1
@@ -77,9 +80,16 @@ class Game(object):
             move_y = keys[pygame.K_s] - keys[pygame.K_w]
             self.player.move(move_x, move_y)
 
+            # Update the camera position to center on the player
+            self.camera_pos[0] = self.player.position[0] - self.screen.get_width() // 2
+            self.camera_pos[1] = self.player.position[1] - self.screen.get_height() // 2
+
             self.screen.fill([255, 255, 255])
-            self.player.draw(self.screen)
+            self.player.draw(self.screen, self.camera_pos)
             pygame.display.update()
+
+        pygame.quit()
+        sys.exit()
 
 
 g = Game()
